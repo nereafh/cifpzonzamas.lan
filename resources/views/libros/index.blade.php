@@ -29,7 +29,6 @@
                     <td>{{ $libro->titulo }}</td>
                     <td>{{ $libro->autor }}</td>
                     <td>{{ $cods_genero[trim($libro->genero)] ?? 'Error con la clave: ['.$libro->genero.']' }}</td>
-                    
                     <!--  {{ $cods_genero[$libro->genero] }} -->
                     <td>{{ $libro->anho }}</td>
                 </tr>
