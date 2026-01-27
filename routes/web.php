@@ -67,4 +67,4 @@ Route::get('/libro/show/{i}', [LibroController::class, 'show'])->name('libro.sho
 
 
 Route::get('/libro/destroy/{i}', [LibroController::class, 'destroy'])->name('libro.destroy');
-Route::post('/libro/destroy/{i}', [LibroController::class, 'destroy'])->name('libro.destroy');
+Route::post('/libro/destroy', [LibroController::class, 'destroy'])->name('libro.destroy');
