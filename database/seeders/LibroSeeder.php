@@ -14,7 +14,8 @@ class LibroSeeder extends Seeder
     public function run(): void
     {
         // MUY IMPORTANTE: Limpiar la tabla antes de empezar para que no queden restos
-        DB::table('libros')->truncate();
+        /*
+                DB::table('libros')->truncate();
 
         DB::table('libros')->insert([
             [
@@ -72,5 +73,10 @@ class LibroSeeder extends Seeder
                 'updated_at' => now()
             ]
         ]);
-    }
+    
+        */
+
 }
+}
+
+

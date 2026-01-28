@@ -15,6 +15,10 @@ class Libro extends Model
         'RM' => 'Realismo mágico', // <--- FALTABA ESTE
         'CF' => 'Ciencia ficción', // <--- FALTABA ESTE
         'NC' => 'Novela clásica',  // <--- FALTABA ESTE
-        'FS' => 'Ficción social'   // <--- FALTABA ESTE
+        'FS' => 'Ficción social',   // <--- FALTABA ESTE
+        'T' => 'Terror',   // <--- FALTABA ESTE
+        'H' => 'Historia',   // <--- FALTABA ESTE
+        'FN' => 'Ficción narrativa',   // <--- FALTABA ESTE
+
     ];
 }

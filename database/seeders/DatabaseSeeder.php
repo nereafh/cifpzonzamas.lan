@@ -1,15 +1,17 @@
 <?php
-//http://127.0.0.1:8001/login
-namespace Database\Seeders; 
+
+/*
+http://127.0.0.1:8001/login
+ */
+namespace Database\Seeders;
 
 use App\Models\User;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use App\Models\Libro;
 use Illuminate\Database\Seeder;
-
-use Illuminate\Support\Facades\Hash;
-
-use Spatie\Permission\Models\Role; //Importante para Spatie
+use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
 class DatabaseSeeder extends Seeder
 {
@@ -18,74 +20,81 @@ class DatabaseSeeder extends Seeder
     /**
      * Seed the application's database.
      */
-
     public function run(): void
     {
-        // 1. Creación de Roles y Permisos
-        $admin = Role::create(['name' => 'admin']);
-        $editor = Role::create(['name' => 'editor']);
+        // 1. LIMPIAR CACHÉ DE PERMISOS (Muy importante para evitar errores de Spatie)
+        app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
 
-        $createPost = Permission::create(['name' => 'create post']);
-        $editPost = Permission::create(['name' => 'edit post']);
-        $deletePost = Permission::create(['name' => 'delete post']);
-
-        $admin->givePermissionTo([$createPost, $editPost, $deletePost]);
-        $editor->givePermissionTo($editPost);
-
-        // 2. Crear usuarios y asignar roles directamente
+        // 2. CREAR USUARIOS
+        
+        // Usuario Normal (para probar que NO puede entrar a libros)
         User::factory()->create([
             'name' => 'Test User',
             'email' => 'test@example.com',
-            'password' => Hash::make('12345678'), // <--- Ponemos la misma
+            'password' => Hash::make('12345678'),
         ]);
 
+        // TU USUARIO (Administradora)
         $userNerea = User::factory()->create([
             'name' => 'Nerea Fernandez',
             'email' => 'nerea_fernandez@cifpzonzamas.es',
             'password' => Hash::make('12345678'),
         ]);
 
-        // Asignamos el rol a la variable directamente, sin buscar por ID
-        $userNerea->assignRole($admin);
+        // 3. CREAR LIBROS (Tus datos)
+        $libros = [
+            ['titulo' => 'El eco del silencio', 'autor' => 'María López', 'anho' => '2001', 'genero' => 'NV', 'descripcion' => 'Una H íntima sobre recuerdos y decisiones pasadas.'],
+            ['titulo' => 'Sombras del futuro', 'autor' => 'Carlos Méndez', 'anho' => '2015', 'genero' => 'CF', 'descripcion' => 'La humanidad enfrenta las consecuencias de sus avances tecnológicos.'],
+            ['titulo' => 'El último reino', 'autor' => 'Laura Fernández', 'anho' => '1998', 'genero' => 'FN', 'descripcion' => 'Un mundo mágico al borde de la destrucción.'],
+            ['titulo' => 'Voces del pasado', 'autor' => 'Antonio Ruiz', 'anho' => '2007', 'genero' => 'H', 'descripcion' => 'Relatos que reconstruyen momentos olvidados.'],
+            ['titulo' => 'La noche eterna', 'autor' => 'Sofía Navarro', 'anho' => '2020', 'genero' => 'T', 'descripcion' => 'El miedo se esconde donde menos se espera.'],
+            ['titulo' => 'Cartas sin destino', 'autor' => 'Javier Morales', 'anho' => '2012', 'genero' => 'T', 'descripcion' => 'Una H de amor contada a través de cartas.'],
+            ['titulo' => 'Más allá del horizonte', 'autor' => 'Elena Torres', 'anho' => '2005', 'genero' => 'NV', 'descripcion' => 'Un viaje que cambia la vida de sus protagonistas.'],
+            ['titulo' => 'El código oculto', 'autor' => 'Miguel Santos', 'anho' => '2018', 'genero' => 'NV', 'descripcion' => 'Nada es lo que parece en este thriller tecnológico.'],
+            ['titulo' => 'Cenizas del ayer', 'autor' => 'Patricia Gómez', 'anho' => '1995', 'genero' => 'NV', 'descripcion' => 'El pasado vuelve para exigir respuestas.'],
+            ['titulo' => 'La ciudad invisible', 'autor' => 'Daniel Herrera', 'anho' => '2010', 'genero' => 'FN', 'descripcion' => 'Una ciudad que solo algunos pueden ver.'],
+            ['titulo' => 'Fragmentos de verdad', 'autor' => 'Lucía Peña', 'anho' => '2003', 'genero' => 'FN', 'descripcion' => 'Reflexiones sobre la sociedad moderna.'],
+            ['titulo' => 'El guardián del bosque', 'autor' => 'Raúl Castro', 'anho' => '1999', 'genero' => 'FN', 'descripcion' => 'Una antigua promesa protege el equilibrio natural.'],
+            ['titulo' => 'Tiempo prestado', 'autor' => 'Isabel Romero', 'anho' => '2016', 'genero' => 'NV', 'descripcion' => 'Cada segundo cuenta cuando el tiempo se agota.'],
+            ['titulo' => 'La ruta perdida', 'autor' => 'Fernando León', 'anho' => '2008', 'genero' => 'NV', 'descripcion' => 'Un mapa antiguo guía a lo desconocido.'],
+            ['titulo' => 'Sueños de acero', 'autor' => 'Andrea Molina', 'anho' => '2021', 'genero' => 'CF', 'descripcion' => 'Robots y humanos luchan por coexistir.'],
+            ['titulo' => 'El reflejo oscuro', 'autor' => 'Hugo Vidal', 'anho' => '2013', 'genero' => 'T', 'descripcion' => 'El verdadero monstruo vive dentro.'],
+            ['titulo' => 'Palabras al viento', 'autor' => 'Carmen Salas', 'anho' => '1997', 'genero' => 'NV', 'descripcion' => 'Versos que exploran el alma humana.'],
+            ['titulo' => 'La frontera del miedo', 'autor' => 'Óscar Núñez', 'anho' => '2019', 'genero' => 'NV', 'descripcion' => 'Cruzar la línea nunca fue tan peligroso.'],
+            ['titulo' => 'Ecos del mar', 'autor' => 'Beatriz Ríos', 'anho' => '2004', 'genero' => 'NV', 'descripcion' => 'El océano guarda secretos profundos.'],
+            ['titulo' => 'El pacto', 'autor' => 'Samuel Ortega', 'anho' => '2011', 'genero' => 'NV', 'descripcion' => 'Una decisión que cambia varias vidas.'],
+            ['titulo' => 'Horizonte rojo', 'autor' => 'Natalia Cruz', 'anho' => '2022', 'genero' => 'CF', 'descripcion' => 'La colonización de Marte no sale como se esperaba.'],
+            ['titulo' => 'El viajero inmóvil', 'autor' => 'Iván Pardo', 'anho' => '1996', 'genero' => 'NV', 'descripcion' => 'Un viaje interior sin moverse del sitio.'],
+            ['titulo' => 'Sombras en la pared', 'autor' => 'Marta Aguilar', 'anho' => '2009', 'genero' => 'T', 'descripcion' => 'La casa esconde presencias inquietantes.'],
+            ['titulo' => 'La melodía rota', 'autor' => 'Pablo Serrano', 'anho' => '2002', 'genero' => 'NV', 'descripcion' => 'La música como salvación y condena.'],
+            ['titulo' => 'El sendero oculto', 'autor' => 'Rosa Valdés', 'anho' => '2014', 'genero' => 'NV', 'descripcion' => 'Un camino secreto lleva a una verdad inesperada.'],
+            ['titulo' => 'Luz de invierno', 'autor' => 'Alberto Cano', 'anho' => '1994', 'genero' => 'T', 'descripcion' => 'Un amor que nace en el frío.'],
+            ['titulo' => 'El umbral', 'autor' => 'Clara Méndez', 'anho' => '2017', 'genero' => 'NV', 'descripcion' => 'Una puerta que nunca debió abrirse.'],
+            ['titulo' => 'Caminos cruzados', 'autor' => 'Diego Fuentes', 'anho' => '2006', 'genero' => 'NV', 'descripcion' => 'Hs que se entrelazan inesperadamente.'],
+            ['titulo' => 'La última señal', 'autor' => 'Verónica Gil', 'anho' => '2023', 'genero' => 'CF', 'descripcion' => 'Una transmisión cambia el destino del planeta.'],
+            ['titulo' => 'Memorias de polvo', 'autor' => 'Julián Reyes', 'anho' => '1993', 'genero' => 'H', 'descripcion' => 'El paso del tiempo contado desde el olvido.'],
+        ];
 
-        // 3. ¡LLAMAR A TUS LIBROS!
-        $this->call([
-            LibroSeeder::class,
-        ]);
+        foreach ($libros as $item) {
+            Libro::create($item);
+        }
+
+        // 4. CONFIGURAR ROLES Y PERMISOS
+        $adminRole = Role::create(['name' => 'admin']);
+        $editorRole = Role::create(['name' => 'editor']);
+
+        $createPermission = Permission::create(['name' => 'create post']);
+        $editPermission = Permission::create(['name' => 'edit post']);
+        $deletePermission = Permission::create(['name' => 'delete post']);
+
+        $adminRole->givePermissionTo([$createPermission, $editPermission, $deletePermission]);
+        $editorRole->givePermissionTo($editPermission);
+
+        // ASIGNAR ROL ADMIN A NEREA
+        $userNerea->assignRole($adminRole);
     }
 
-    /*
-    public function run(): void
-    {
-        // User::factory(10)->create();
-
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
-        ]);
-
-        navegador: /dashboard 
-        User::factory()->create([
-            'name' => 'Nerea Fernandez',
-            'email' => 'nerea_fernandez@cifpzonzamas.es',
-            'password' => Hash::make('12345678'),
-        ]);
 
 
-        //Ejemplo de creacion de roles y permisos con Spatie
-        $admin = Role::create(['name' => 'admin']);
-        $editor = Role::create(['name' => 'editor']);
-
-        $createPost = Permission::create(['name' => 'create post']);
-        $editPost = Permission::create(['name' => 'edit post']);
-        $deletePost = Permission::create(['name' => 'delete post']);
-
-        $admin->givePermissionTo($createPost, $editPost, $deletePost);
-        $editor->givePermissionTo($editPost);
-
-        $user = User::find(2); // Asignar rol admin a Nerea Fernandez
-        $user->assignRole('admin');
-
-    }
-    */
 }
+

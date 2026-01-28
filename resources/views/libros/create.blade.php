@@ -44,6 +44,7 @@
             <label for="idanho" class="@error('anho') text-danger @enderror form-label">Año publicación</label>
             <select  {{ $disabled }} class="@error('anho') is-invalid @enderror form-select" aria-label="2026" id="idanho" name="anho" aria-describedby="anhoHelp">
                 <option></option>
+                <!--  cambiarlo a menos para aumentar el rango --->
                 @php
 
                     $options = '';
