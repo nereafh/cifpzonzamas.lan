@@ -1,5 +1,5 @@
 <?php
-
+//http://127.0.0.1:8001/login
 namespace Database\Seeders; 
 
 use App\Models\User;
@@ -36,6 +36,7 @@ class DatabaseSeeder extends Seeder
         User::factory()->create([
             'name' => 'Test User',
             'email' => 'test@example.com',
+            'password' => Hash::make('12345678'), // <--- Ponemos la misma
         ]);
 
         $userNerea = User::factory()->create([
