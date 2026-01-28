@@ -1,5 +1,8 @@
 <?php
-
+/*
+php artisan migrate:fresh --seed
+para borrar y crear tablas de nuevo con los seeders
+*/
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
