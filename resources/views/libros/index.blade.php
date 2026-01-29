@@ -26,10 +26,9 @@
                     @foreach ($libros as $libro)       
                         <tr>
                             <th>
-                                <a href="/libro/show/{{ $libro->id }}" class="btn btn-primary"><i class="bi bi-search"></i></a>
-                                <a href="/libro/edit/{{ $libro->id }}" class="btn btn-success"><i class="bi bi-pencil-square"></i></a>
-                                <a href="/libro/destroy/{{ $libro->id }}" class="btn btn-danger"><i class="bi bi-trash"></i></a>
-                            </th>
+                                <a onclick="cargarOperacion('{{ $libro->id }}', 'show')" class="btn btn-primary"><i class="bi bi-search"></i></a>
+                                <a onclick="cargarOperacion('{{ $libro->id }}', 'edit')" class="btn btn-success"><i class="bi bi-pencil-square"></i></a>
+                                <a onclick="cargarOperacion('{{ $libro->id }}', 'destroy')" class="btn btn-danger"><i class="bi bi-trash"></i></a>                            </th>
                             <td>{{ $libro->titulo }}</td>
                             <td>{{ $libro->autor }}</td>
                             <td>{{ $cods_genero[trim($libro->genero)] ?? 'Error con la clave: ['.$libro->genero.']' }}</td>
@@ -39,8 +38,7 @@
                     {{ $libros->links() }}
                 </tbody>
             </table>
-            <a class="btn btn-primary mt-3" href="{{ route('libro.create') }}">Nuevo Libro</a>
-
+        <button type="button" class="btn btn-primary mt-3" onclick="cargarOperacion('', 'create')">Nuevo Libro</button>
         @else
             {{-- Mensaje para usuarios no admin (para que no vean la tabla vacía) --}}
             <div class="alert alert-info mt-4">
@@ -48,57 +46,83 @@
             </div>
         @endrole
     </div>
-</x-app-layout>
-
-<!--
-
-@extends('layout')
-@section('title', 'Listado de libros')
-@section('contenido')
-
-<div class="container pt-4">
-
-    <table class="table">
-        <thead>
-            <tr>
-                <th scope="col">#</th>
-                <th scope="col">Título</th>
-                <th scope="col">Autor</th>
-                <th scope="col">Género</th>
-                <th scope="col">Año</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach ($libros as $libro)       
-            
-
-
-                <tr>
-                    <th>
-                        <a href="/libro/show/{{ $libro->id }}" class="btn btn-primary"><i class="bi bi-search"></i></a>
-                        <a href="/libro/edit/{{ $libro->id }}" class="btn btn-success"><i class="bi bi-pencil-square"></i></a>
-                        <a href="/libro/destroy/{{ $libro->id }}" class="btn btn-danger"><i class="bi bi-trash"></i></a>
-
-                    </th>
-                    <td>{{ $libro->titulo }}</td>
-                    <td>{{ $libro->autor }}</td>
-                    <td>{{ $cods_genero[$libro->genero] }}</td>
-                    <td>{{ $libro->anho }}</td>
-                </tr>
-            @endforeach
-
-            {{ $libros->links() }}
-
-
-
-        </tbody>
-    </table>
-
-    <a class="btn btn-primary" href="{{ route('libro.create') }}">Nuevo Libro</a>
-
-
-
+<div class="modal fade" id="ventanaModal" tabindex="-1" style="z-index: 9999;">
+<div class="modal-dialog modal-lg">
+    <div class="modal-content">
+        {{-- Aquí es donde metemos la clase modal-body y text-dark --}}
+        <div id="contenidoModal" class="modal-body text-dark">
+            </div>
+    </div>
+</div>
 </div>
 
-@endsection
--->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+// Guardamos el token en una constante para no usar llaves de Blade dentro del fetch
+const CSRF_TOKEN = '{{ csrf_token() }}';
+
+function cargarOperacion(id, operacion) {
+    let url = '';
+    
+    // Ajuste de URLs según TUS rutas en web.php
+    switch(operacion) {
+        case 'show':    
+            url = `/libro/show/${id}`; 
+            break;
+        case 'edit':    
+            url = `/libro/edit/${id}`; 
+            break;
+        case 'destroy': 
+            url = `/libro/destroy/${id}`; 
+            break;
+        case 'create':  
+            url = `/libro/create`; 
+            break;
+    }
+
+    console.log("Intentando cargar:", url);
+
+    fetch(url + '?modo=ajax')
+        .then(response => {
+            if (!response.ok) throw new Error('Error ' + response.status + ' en ruta: ' + url);
+            return response.text();
+        })
+        .then(html => {
+            document.getElementById('contenidoModal').innerHTML = html;
+            
+            // Abrimos el modal
+            var elModal = document.getElementById('ventanaModal');
+            var instancia = bootstrap.Modal.getOrCreateInstance(elModal);
+            instancia.show();
+        })
+        .catch(error => {
+            console.error("Error en el fetch:", error);
+        });
+}
+
+document.addEventListener('submit', function(e) {
+    if (e.target && e.target.closest('#contenidoModal')) {
+        e.preventDefault();
+
+        const form = e.target;
+        const formData = new FormData(form);
+        formData.append('modo', 'ajax');
+
+        fetch(form.action, {
+            method: 'POST',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+                'X-CSRF-TOKEN': CSRF_TOKEN
+            },
+            body: formData
+        })
+        .then(response => response.text())
+        .then(html => {
+            document.getElementById('contenidoModal').innerHTML = html;
+        })
+        .catch(error => console.error('Error:', error));
+    }
+});
+</script>
+</x-app-layout>
+

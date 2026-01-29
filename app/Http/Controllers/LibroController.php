@@ -14,7 +14,6 @@ class LibroController extends Controller
     public function index()
     {
         $libros = Libro::paginate(10);
-
         return view('libros.index',['libros' => $libros,'cods_genero' => Libro::$cods_genero]);
     }
 
@@ -24,9 +23,9 @@ class LibroController extends Controller
     public function create(Request $request)
     {
         $data = ['exito' =>''];
+        $disabled = ''; // Por defecto los campos están abiertos para escribir
 
         if ($request->isMethod('post')) {
-
             $validated = $request->validate([
                 'titulo'      => 'required|string|max:255',
                 'autor'       => 'required|string|max:255',
@@ -37,21 +36,41 @@ class LibroController extends Controller
 
             $libro = new Libro();
 
-            
             $libro->titulo      = $request->input('titulo');;
             $libro->autor       = $request->input('autor');;
             $libro->anho        = $request->input('anho');;
             $libro->genero      = $request->input('genero');;
             $libro->descripcion = $request->input('descripcion');
-
             $libro->save();   
             
             $data['exito'] = 'Operación realiza correctamente';
+            $disabled = 'disabled'; // Bloqueamos tras éxito 
+
+            // AJAX: Si estamos guardando desde el modal, devolvemos el formulario con el mensaje de éxito
+            if ($request->input('modo') == 'ajax') {
+                return view('libros.create', [
+                    'datos' => $data, 
+                    'libro' => $libro, 
+                    'cods_genero' => Libro::$cods_genero, 
+                    'disabled' => $disabled, 
+                    'oper' => 'create'
+                ])->render();
+            }
 
         }
 
         $libro = new Libro();
 
+        // AJAX: Para abrir el modal vacío la primera vez (cuando pulsas el botón "Nuevo Libro")
+        if ($request->input('modo') == 'ajax') {
+            return view('libros.create', [
+                'datos' => $data, 
+                'libro' => $libro, 
+                'cods_genero' => Libro::$cods_genero, 
+                'disabled' => $disabled, 
+                'oper' => 'create'
+            ])->render();
+        }
 
         return view('libros.create',['datos' => $data,'libro' => $libro,'cods_genero' => Libro::$cods_genero, 'disabled' => '','oper' => 'create']);
     }
@@ -67,12 +86,16 @@ class LibroController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(string $id, Request $request) //Añadir Request 
     {
 
         $datos = ['exito' => ''];
         $libro = Libro::find($id);
 
+        // AJAX: Devolver solo formulario
+        if ($request->input('modo') == 'ajax') {
+            return view('libros.create',['libro' => $libro,'datos' => $datos,'cods_genero' => Libro::$cods_genero, 'disabled' => 'disabled','oper' => 'show'])->render();
+        }
         return view('libros.create',['libro' => $libro,'datos' => $datos,'cods_genero' => Libro::$cods_genero, 'disabled' => 'disabled','oper' => 'show']);
     }
 
@@ -113,12 +136,14 @@ class LibroController extends Controller
             $libro->anho        = $request->input('anho');;
             $libro->genero      = $request->input('genero');;
             $libro->descripcion = $request->input('descripcion');
-
             $libro->save();   
             
             $datos['exito'] = 'Operación realiza correctamente';
-            
             $disabled = 'disabled';
+            // AJAX: Devolver formulario con mensaje de éxito
+            if ($request->input('modo') == 'ajax') {
+                return view('libros.create',['libro' => $libro,'datos' => $datos,'cods_genero' => Libro::$cods_genero, 'disabled' => $disabled,'oper' => 'edit'])->render();
+            }
         }
         else
         {
@@ -126,7 +151,10 @@ class LibroController extends Controller
             $libro = Libro::find($id);
             $disabled = '';
         }
-
+        // AJAX: Para la carga inicial del modal
+        if ($request->input('modo') == 'ajax') {
+            return view('libros.create',['libro' => $libro,'datos' => $datos,'cods_genero' => Libro::$cods_genero, 'disabled' => $disabled,'oper' => 'edit'])->render();
+        }
         return view('libros.create',['libro' => $libro,'datos' => $datos,'cods_genero' => Libro::$cods_genero, 'disabled' => $disabled,'oper' => 'edit']);
     }
 
@@ -141,23 +169,65 @@ class LibroController extends Controller
     /**
      * Remove the specified resource from storage.
      */
+    public function destroy(Request $request, string $id = '')
+    {
+        // Buscamos el libro (ya sea por el ID de la ruta o por el ID del formulario POST)
+        $id_libro = $id ?: $request->input('id');
+        $libro = Libro::find($id_libro);
+    
+        if ($request->isMethod('post')) {
+            if ($libro) {
+                $libro->delete();
+            }
+    
+            $datos = ['exito' => 'Operación realizada con éxito'];
+            $cods_genero = Libro::$cods_genero;
+            $disabled = 'disabled';
+            $oper = 'destroy';
+    
+            // IMPORTANTE: Devolvemos la VISTA, no un JSON, para que el modal muestre el mensaje verde
+            if ($request->input('modo') == 'ajax') {
+                return view('libros.create', compact('libro', 'cods_genero', 'oper', 'disabled', 'datos'))->render();
+            }
+    
+            return redirect()->route('libro.index');
+        }
+    
+        // Lógica para cuando se abre el modal por primera vez (GET)
+        $cods_genero = Libro::$cods_genero;
+        $oper = 'destroy';
+        $disabled = 'disabled';
+        $datos = ['exito' => ''];
+    
+        if ($request->input('modo') == 'ajax') {
+            return view('libros.create', compact('libro', 'cods_genero', 'oper', 'disabled', 'datos'))->render();
+        }
+    
+        return view('libros.create', compact('libro', 'cods_genero', 'oper', 'disabled', 'datos'));
+    }
+
+        
+    }
+
+
+    /*
     public function destroy(Request $request,string $id='')
     {
        if ($request->isMethod('post')) {   
 
-            /*
-            $datos_save = [];
             
-            $datos_save['titulo']       = $request->input('titulo');;
-            $datos_save['autor']        = $request->input('autor');;
-            $datos_save['anho']         = $request->input('anho');;
-            $datos_save['genero']       = $request->input('genero');;
-            $datos_save['descripcion']  = $request->input('descripcion');
+            //$datos_save = [];
+            
+            //$datos_save['titulo']       = $request->input('titulo');;
+            //$datos_save['autor']        = $request->input('autor');;
+            //$datos_save['anho']         = $request->input('anho');;
+            //$datos_save['genero']       = $request->input('genero');;
+            //$datos_save['descripcion']  = $request->input('descripcion');
 
 
-            Libro::where('id',$request->input('id'))->update($datos_save);
+            //Libro::where('id',$request->input('id'))->update($datos_save);
 
-            */
+            
 
             $libro = Libro::find($request->input('id'));
 
@@ -178,4 +248,5 @@ class LibroController extends Controller
 
         
     }
-}
+
+    */
