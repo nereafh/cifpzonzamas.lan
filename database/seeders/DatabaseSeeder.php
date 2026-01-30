@@ -13,6 +13,8 @@ use Spatie\Permission\Models\Permission;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
+use App\Models\Socio;
+
 class DatabaseSeeder extends Seeder
 {
     use WithoutModelEvents;
@@ -92,6 +94,28 @@ class DatabaseSeeder extends Seeder
 
         // ASIGNAR ROL ADMIN A NEREA
         $userNerea->assignRole($adminRole);
+
+
+
+        //SOCIOS
+        $socios = [
+            ['nombre' => 'Ana García', 'dni' => '12345678A', 'edad' => 25, 'categoria' => 'OR', 'iban' => 'ES1234567890123456789012'],
+            ['nombre' => 'Juan Pérez', 'dni' => '87654321B', 'edad' => 42, 'categoria' => 'PL', 'iban' => 'ES9876543210987654321098'],
+            ['nombre' => 'Elena Blanes', 'dni' => '11223344C', 'edad' => 31, 'categoria' => 'PR', 'iban' => 'ES1111222233334444555566'],
+            ['nombre' => 'Marcos Soler', 'dni' => '55667788D', 'edad' => 19, 'categoria' => 'PL', 'iban' => 'ES5555666677778888999900'],
+            ['nombre' => 'Lucía Martos', 'dni' => '99001122E', 'edad' => 55, 'categoria' => 'OR', 'iban' => 'ES9999000011112222333344'],
+            ['nombre' => 'Ricardo Tormo', 'dni' => '33445566F', 'edad' => 28, 'categoria' => 'PR', 'iban' => 'ES3333444455556666777788'],
+            ['nombre' => 'Sara Jiménez', 'dni' => '77889900G', 'edad' => 37, 'categoria' => 'OR', 'iban' => 'ES7777888899990000111122'],
+            ['nombre' => 'Pedro Picazo', 'dni' => '22334455H', 'edad' => 64, 'categoria' => 'PL', 'iban' => 'ES2222333344445555666677'],
+            ['nombre' => 'Marta Sánchez', 'dni' => '66778899I', 'edad' => 22, 'categoria' => 'PR', 'iban' => 'ES6666777788889999000011'],
+            ['nombre' => 'Jorge Valls', 'dni' => '44556677J', 'edad' => 48, 'categoria' => 'OR', 'iban' => 'ES4444555566667777888899'],
+        ];
+
+        foreach ($socios as $socio) {
+            Socio::create($socio);
+        }
+
+        
     }
 
 

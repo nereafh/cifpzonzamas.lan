@@ -10,6 +10,8 @@ use App\Http\Controllers\LibroController;
 
 use App\Http\Controllers\ProfileController; //para poder ver el perfil
 
+use App\Http\Controllers\SocioController;
+
 Route::get('/', function () {
     return view('welcome');
 });
@@ -62,6 +64,17 @@ Route::middleware(['auth'])->group(function () {
     
 });
 
+// Solo usuarios logueados Y que sean 'admin' pueden entrar
+Route::middleware(['auth'])->group(function () {
+    Route::get('/socio', [SocioController::class, 'index'])->name('socio.index');
+    Route::get('/socio/create', [SocioController::class, 'create'])->name('socio.create');
+    Route::post('/socio/create', [SocioController::class, 'create']);
+    Route::get('/socio/edit/{id}', [SocioController::class, 'edit'])->name('socio.edit');
+    Route::post('/socio/edit', [SocioController::class, 'edit']);
+    Route::get('/socio/show/{id}', [SocioController::class, 'show'])->name('socio.show');
+    Route::get('/socio/destroy/{id}', [SocioController::class, 'destroy'])->name('socio.destroy');
+    Route::post('/socio/destroy', [SocioController::class, 'destroy']);
+});
 
 /*
 // Solo usuarios logueados Y que sean 'admin' pueden entrar
