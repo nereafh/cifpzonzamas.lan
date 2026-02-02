@@ -93,7 +93,6 @@ class SocioController extends Controller
         $categorias = Socio::$categorias;
         $datos = ['exito' => ''];
         $disabled = '';
-        $categorias = Socio::$categorias;
         $oper = 'edit';
 
         if ($request->isMethod('post')) {   

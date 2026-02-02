@@ -171,39 +171,53 @@ class LibroController extends Controller
      */
     public function destroy(Request $request, string $id = '')
     {
-        // Buscamos el libro (ya sea por el ID de la ruta o por el ID del formulario POST)
-        $id_libro = $id ?: $request->input('id');
-        $libro = Libro::find($id_libro);
+        // 1. Buscamos el ID (puede venir de la URL o del input 'id' del formulario)
+        $id_Libro = $id ?: $request->input('id'); 
+        $libro = Libro::find($id_Libro);
+        
+        $oper = 'destroy';
+        $datos = ['exito' => ''];
+        $disabled = 'disabled';
     
         if ($request->isMethod('post')) {
-            if ($libro) {
-                $libro->delete();
+            if ($libro) { 
+                $libro->delete(); 
             }
-    
-            $datos = ['exito' => 'Operación realizada con éxito'];
-            $cods_genero = Libro::$cods_genero;
-            $disabled = 'disabled';
-            $oper = 'destroy';
-    
-            // IMPORTANTE: Devolvemos la VISTA, no un JSON, para que el modal muestre el mensaje verde
+            $datos['exito'] = 'Libro eliminado correctamente';
+            
+            // Devolvemos un objeto vacío para que la vista no de error al buscar propiedades
+            $libro = new Libro(); 
+            
             if ($request->input('modo') == 'ajax') {
-                return view('libros.create', compact('libro', 'cods_genero', 'oper', 'disabled', 'datos'))->render();
+                return view('libros.create', [
+                    'libro' => $libro, 
+                    'cods_genero' => Libro::$cods_genero, 
+                    'oper' => $oper, 
+                    'disabled' => $disabled, 
+                    'datos' => $datos
+                ])->render();
             }
-    
             return redirect()->route('libro.index');
         }
     
-        // Lógica para cuando se abre el modal por primera vez (GET)
-        $cods_genero = Libro::$cods_genero;
-        $oper = 'destroy';
-        $disabled = 'disabled';
-        $datos = ['exito' => ''];
-    
+        // GET: Carga inicial del modal de confirmación
         if ($request->input('modo') == 'ajax') {
-            return view('libros.create', compact('libro', 'cods_genero', 'oper', 'disabled', 'datos'))->render();
+            return view('libros.create', [
+                'libro' => $libro, 
+                'cods_genero' => Libro::$cods_genero, 
+                'oper' => $oper, 
+                'disabled' => $disabled, 
+                'datos' => $datos
+            ])->render();
         }
     
-        return view('libros.create', compact('libro', 'cods_genero', 'oper', 'disabled', 'datos'));
+        return view('libros.create', [
+            'libro' => $libro, 
+            'cods_genero' => Libro::$cods_genero, 
+            'oper' => $oper, 
+            'disabled' => $disabled, 
+            'datos' => $datos
+        ]);
     }
 
         

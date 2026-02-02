@@ -20,8 +20,8 @@
     <form action="/libro/{{ $oper }}" method="POST">
 
         @csrf
-
         <input name="id" type="hidden" value="{{ $libro->id }}" />
+
         <div class="mb-3">
             <label for="idtitulo" class="@error('titulo') text-danger @enderror form-label">Título</label>
             <input {{ $disabled }} value="{{ old('titulo',$libro->titulo) }}" type="text" name="titulo" class="@error('titulo') is-invalid @enderror form-control" id="idtitulo" aria-describedby="libroHelp">
