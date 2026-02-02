@@ -17,13 +17,30 @@ class SocioController extends Controller
         $socio = new Socio();
         $datos = ['exito' => ''];
         $disabled = '';
+        $categorias = Socio::$categorias;
+        $oper = 'create';
     
         if ($request->isMethod('post')) {
+            try {
             $request->validate([
-                'nombre'    => 'required|string|min:3',
-                'dni'       => 'required|unique:socios,dni',
+                'nombre'    => ['required', 'string', 'min:3', 'regex:/^[A-Z]/'],
+                'dni'       => 'required|unique:socios,dni', // En create no necesitas el chequeo de $oper
                 'categoria' => 'required|in:PL,OR,PR',
-                'iban'      => 'required'
+                'edad'      => 'required|numeric|min:18|max:120',
+                'iban'      => ['required', 'regex:/^ES\d{22}$/'], // ES + exactamente 22 dígitos
+            ],
+            [
+                'nombre.regex' => 'El nombre debe comenzar por una letra mayúscula.',
+                'nombre.required' => 'El nombre es obligatorio.',
+                'dni.required' => 'El DNI es obligatorio.',
+                'dni.unique' => 'Este DNI ya existe.',
+                'edad.required'   => 'La edad es obligatoria.',
+                'edad.numeric'    => 'La edad debe ser un número.',
+                'edad.min'        => 'El socio debe ser mayor de edad.',
+                'categoria.required' => 'La categoría es obligatoria.',
+                'iban.required' => 'El IBAN es obligatorio.',
+                'iban.regex' => 'El IBAN debe ser ES + 22 dígitos.'
+
             ]);
     
             $socio->nombre    = $request->input('nombre');
@@ -35,6 +52,18 @@ class SocioController extends Controller
     
             $datos['exito'] = '¡Socio dado de alta!';
             $disabled = 'disabled';
+            } catch (\Illuminate\Validation\ValidationException $e) {
+                // Si hay error de validación, volvemos a enviar la vista con los errores
+            if ($request->input('modo') == 'ajax') {
+                return view('socios.create', [
+                    'socio' => $socio,
+                    'datos' => $datos,
+                    'disabled' => $disabled,
+                    'categorias' => $categorias,
+                    'oper' => $oper
+                ])->withErrors($e->validator)->render();
+            }
+        }
         }
     
         $categorias = Socio::$categorias;
@@ -58,17 +87,36 @@ class SocioController extends Controller
 
     public function edit(Request $request, string $id = '')
     {
+        
         $id_Socio = $id ?: $request->input('id_actual');
         $socio = Socio::find($id_Socio);
         $categorias = Socio::$categorias;
         $datos = ['exito' => ''];
         $disabled = '';
+        $categorias = Socio::$categorias;
+        $oper = 'edit';
 
         if ($request->isMethod('post')) {   
+            try {
             $request->validate([
-                'nombre'    => 'required|string|min:3',
+                // Añadimos la regex de la mayúscula que faltaba en el edit
+                'nombre'    => ['required', 'string', 'min:3', 'regex:/^[A-Z]/'],
                 'dni'       => 'required|unique:socios,dni,' . $socio->id,
                 'categoria' => 'required|in:PL,OR,PR',
+                'edad'      => 'required|numeric|min:18|max:120',
+                'iban'      => ['required', 'regex:/^ES\d{22}$/'] // ES + exactamente 22 dígitos
+            ],
+            [
+                'nombre.regex' => 'El nombre debe comenzar por una letra mayúscula.',
+                'nombre.required' => 'El nombre es obligatorio.',
+                'dni.required' => 'El DNI es obligatorio.',
+                'dni.unique' => 'Este DNI ya existe.',
+                'edad.required'   => 'La edad es obligatoria.',
+                'edad.numeric'    => 'La edad debe ser un número.',
+                'edad.min'        => 'El socio debe ser mayor de edad.',
+                'categoria.required' => 'La categoría es obligatoria.',
+                'iban.required' => 'El IBAN es obligatorio.',
+                'iban.regex' => 'El IBAN debe ser ES + 22 dígitos.'
             ]);
 
             $socio->nombre    = $request->input('nombre');
@@ -80,13 +128,27 @@ class SocioController extends Controller
             
             $datos['exito'] = 'Operación realizada correctamente';
             $disabled = 'disabled';
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            // Si falla la validación en AJAX, devolvemos la vista con los errores
+            if ($request->input('modo') == 'ajax') {
+                return view('socios.create', [
+                    'socio' => $socio,
+                    'datos' => $datos,
+                    'disabled' => $disabled,
+                    'categorias' => $categorias,
+                    'oper' => $oper
+                ])->withErrors($e->validator)->render();
+            }
         }
+    }
 
         if ($request->input('modo') == 'ajax') {
             return view('socios.create', compact('socio', 'datos', 'categorias', 'disabled'))->with('oper', 'edit')->render();
         }
         return view('socios.create', compact('socio', 'datos', 'categorias', 'disabled'))->with('oper', 'edit');
+    
     }
+    
 
     public function destroy(Request $request, string $id = '')
     {
