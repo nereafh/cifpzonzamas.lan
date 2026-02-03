@@ -13,6 +13,9 @@ use Spatie\Permission\Models\Permission;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
+use App\Models\Vehiculo;
+
+
 use App\Models\Socio;
 
 class DatabaseSeeder extends Seeder
@@ -40,6 +43,13 @@ class DatabaseSeeder extends Seeder
         $userNerea = User::factory()->create([
             'name' => 'Nerea Fernandez',
             'email' => 'nerea_fernandez@cifpzonzamas.es',
+            'password' => Hash::make('12345678'),
+        ]);
+
+        // NUEVO USUARIO (Juan - Administrador)
+        $userJuan = User::factory()->create([
+            'name' => 'Juan',
+            'email' => 'juan@cifpzonzamas.es',
             'password' => Hash::make('12345678'),
         ]);
 
@@ -92,9 +102,9 @@ class DatabaseSeeder extends Seeder
         $adminRole->givePermissionTo([$createPermission, $editPermission, $deletePermission]);
         $editorRole->givePermissionTo($editPermission);
 
-        // ASIGNAR ROL ADMIN A NEREA
+        // ASIGNAR ROL ADMIN A NEREA Y A JUAN
         $userNerea->assignRole($adminRole);
-
+        $userJuan->assignRole($adminRole);
 
 
         //SOCIOS
@@ -114,6 +124,30 @@ class DatabaseSeeder extends Seeder
         foreach ($socios as $socio) {
             Socio::create($socio);
         }
+
+        //VEHICULOS
+        $vehiculos = [
+            ['marca' => 'Toyota', 'modelo' => 'Corolla', 'matricula' => '1234ABC', 'combustible' => 'EL', 'estado' => 'DI', 'anho' => '2021'],
+            ['marca' => 'Seat', 'modelo' => 'Ibiza', 'matricula' => '5678DEF', 'combustible' => 'GA', 'estado' => 'AL', 'anho' => '2022'],
+            ['marca' => 'Hyundai', 'modelo' => 'Tucson', 'matricula' => '9012GHI', 'combustible' => 'DI', 'estado' => 'TA', 'anho' => '2023'],
+            ['marca' => 'Tesla', 'modelo' => 'Model 3', 'matricula' => '1122JKL', 'combustible' => 'EL', 'estado' => 'DI', 'anho' => '2021'],
+            ['marca' => 'Renault', 'modelo' => 'Clio', 'matricula' => '3344MNO', 'combustible' => 'GA', 'estado' => 'DI', 'anho' => '2022'],
+            ['marca' => 'Kia', 'modelo' => 'Sportage', 'matricula' => '5566PQR', 'combustible' => 'DI', 'estado' => 'AL', 'anho' => '2023'],
+            ['marca' => 'Volkswagen', 'modelo' => 'Golf', 'matricula' => '7788STU', 'combustible' => 'GA', 'estado' => 'DI', 'anho' => '2021'],
+            ['marca' => 'Peugeot', 'modelo' => '208', 'matricula' => '9900VWX', 'combustible' => 'EL', 'estado' => 'TA', 'anho' => '2022'],
+            ['marca' => 'BMW', 'modelo' => 'Serie 1', 'matricula' => '2233YZA', 'combustible' => 'DI', 'estado' => 'DI', 'anho' => '2023'],
+            ['marca' => 'Audi', 'modelo' => 'A3', 'matricula' => '4455BCD', 'combustible' => 'GA', 'estado' => 'AL', 'anho' => '2021'],
+            ['marca' => 'Ford', 'modelo' => 'Focus', 'matricula' => '6677EFG', 'combustible' => 'DI', 'estado' => 'DI', 'anho' => '2022'],
+            ['marca' => 'Mercedes', 'modelo' => 'Clase A', 'matricula' => '8899HIJ', 'combustible' => 'GA', 'estado' => 'DI', 'anho' => '2023'],
+            ['marca' => 'Nissan', 'modelo' => 'Leaf', 'matricula' => '0011KLM', 'combustible' => 'EL', 'estado' => 'AL', 'anho' => '2021'],
+            ['marca' => 'Dacia', 'modelo' => 'Sandero', 'matricula' => '2233NOP', 'combustible' => 'GA', 'estado' => 'TA', 'anho' => '2022'],
+            ['marca' => 'Volvo', 'modelo' => 'XC40', 'matricula' => '4455QRS', 'combustible' => 'EL', 'estado' => 'DI', 'anho' => '2023'],
+        ];
+
+        foreach ($vehiculos as $vehiculo) {
+            Vehiculo::create($vehiculo);
+        }
+
 
         
     }

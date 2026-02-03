@@ -22,6 +22,9 @@
                         <x-nav-link :href="route('socio.index')" :active="request()->routeIs('socio.index')">
                             {{ __('Socios') }}
                         </x-nav-link>
+                        <x-nav-link :href="route('vehiculo.index')" :active="request()->routeIs('vehiculo.index')">
+                            {{ __('Vehiculos') }}
+                        </x-nav-link>
                     @endrole
                 </div>
             </div>
@@ -83,6 +86,9 @@
             </x-responsive-nav-link>
             <x-responsive-nav-link :href="route('socio.index')" :active="request()->routeIs('socio.index')">
                 {{ __('Socios') }}
+            </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('vehiculo.index')" :active="request()->routeIs('vehiculo.index')">
+                {{ __('Vehiculos') }}
             </x-responsive-nav-link>
         </div>
 

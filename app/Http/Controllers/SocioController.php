@@ -1,5 +1,15 @@
 <?php
+/*
+Crear modelo, migración y controlador a la vez
+php artisan make:model Socio -mc
 
+Datos de prueba en Seeder o sino en DatabaseSeeder.php:
+php artisan make:seeder SociosSeeder
+
+Resetear tablas y datos de prueba: 
+php artisan migrate:fresh --seed
+
+*/
 namespace App\Http\Controllers;
 
 use App\Models\Socio;

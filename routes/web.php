@@ -12,6 +12,8 @@ use App\Http\Controllers\ProfileController; //para poder ver el perfil
 
 use App\Http\Controllers\SocioController;
 
+use App\Http\Controllers\VehiculoController;
+
 Route::get('/', function () {
     return view('welcome');
 });
@@ -74,6 +76,19 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/socio/show/{id}', [SocioController::class, 'show'])->name('socio.show');
     Route::get('/socio/destroy/{id}', [SocioController::class, 'destroy'])->name('socio.destroy');
     Route::post('/socio/destroy', [SocioController::class, 'destroy']);
+});
+
+
+// Solo usuarios logueados Y que sean 'admin' pueden entrar
+Route::middleware(['auth'])->group(function () {
+    Route::get('/vehiculo', [VehiculoController::class, 'index'])->name('vehiculo.index');
+    Route::get('/vehiculo/create', [VehiculoController::class, 'create'])->name('vehiculo.create');
+    Route::post('/vehiculo/create', [VehiculoController::class, 'create']);
+    Route::get('/vehiculo/edit/{id}', [VehiculoController::class, 'edit'])->name('vehiculo.edit');
+    Route::post('/vehiculo/edit', [VehiculoController::class, 'edit']);
+    Route::get('/vehiculo/show/{id}', [VehiculoController::class, 'show'])->name('vehiculo.show');
+    Route::get('/vehiculo/destroy/{id}', [VehiculoController::class, 'destroy'])->name('vehiculo.destroy');
+    Route::post('/vehiculo/destroy', [VehiculoController::class, 'destroy']);
 });
 
 /*

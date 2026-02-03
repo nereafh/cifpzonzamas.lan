@@ -3,7 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Factories\HasFactory; // Añade esta
+use Illuminate\Database\Eloquent\Factories\HasFactory; // Añado
 
 class Socio extends Model {
     use HasFactory;
