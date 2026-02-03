@@ -27,10 +27,10 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // 1. LIMPIAR CACHÉ DE PERMISOS (Muy importante para evitar errores de Spatie)
+        // LIMPIAR CACHÉ DE PERMISOS (Muy importante para evitar errores de Spatie)
         app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
 
-        // 2. CREAR USUARIOS
+        // CREAR USUARIOS
         
         // Usuario Normal (para probar que NO puede entrar a libros)
         User::factory()->create([
@@ -53,7 +53,7 @@ class DatabaseSeeder extends Seeder
             'password' => Hash::make('12345678'),
         ]);
 
-        // 3. CREAR LIBROS (Tus datos)
+        // CREAR LIBROS 
         $libros = [
             ['titulo' => 'El eco del silencio', 'autor' => 'María López', 'anho' => '2001', 'genero' => 'NV', 'descripcion' => 'Una H íntima sobre recuerdos y decisiones pasadas.'],
             ['titulo' => 'Sombras del futuro', 'autor' => 'Carlos Méndez', 'anho' => '2015', 'genero' => 'CF', 'descripcion' => 'La humanidad enfrenta las consecuencias de sus avances tecnológicos.'],
@@ -91,7 +91,7 @@ class DatabaseSeeder extends Seeder
             Libro::create($item);
         }
 
-        // 4. CONFIGURAR ROLES Y PERMISOS
+        // CONFIGURAR ROLES Y PERMISOS
         $adminRole = Role::create(['name' => 'admin']);
         $editorRole = Role::create(['name' => 'editor']);
 
